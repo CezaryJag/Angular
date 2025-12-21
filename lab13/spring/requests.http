@@ -1,0 +1,85 @@
+@BASE = http://localhost:8080/api
+
+### GET lista
+GET {{BASE}}/locations
+Accept: application/json
+
+### GET po id
+GET {{BASE}}/locations/1
+Accept: application/json
+
+### POST - utworzenie
+POST {{BASE}}/locations
+Content-Type: application/json
+
+{
+  "name": "Warsaw",
+  "latitude": 52.2297,
+  "longitude": 21.0122
+}
+
+### PATCH - częściowa aktualizacja (merge patch)
+PATCH {{BASE}}/locations/1
+Content-Type: application/merge-patch+json
+
+{
+  "name": "Warsaw Updated"
+}
+
+### DELETE
+DELETE {{BASE}}/locations/1
+
+
+### weather-data powiązane
+
+### GET lista weather-data
+GET {{BASE}}/weather-data
+Accept: application/json
+
+### GET po id
+GET {{BASE}}/weather-data/1
+Accept: application/json
+
+### POST - utworzenie z przekazaniem referencji do lokalizacji (URI)
+POST {{BASE}}/weather-data
+Content-Type: application/json
+
+{
+  "timestamp": "2025-12-08T12:00:00Z",
+  "temperature": 3.5,
+  "location": "{{BASE}}/locations/1"
+}
+
+### ALTERNATYWA: utworzyć obiekt, potem powiązać relację przez text/uri-list
+POST {{BASE}}/weather-data
+Content-Type: application/json
+
+{
+  "timestamp": "2025-12-08T12:00:00Z",
+  "temperature": 3.5
+}
+
+### następnie powiązać:
+PUT {{BASE}}/weather-data/{id}/location
+Content-Type: text/uri-list
+
+{{BASE}}/locations/1
+
+### PATCH - częściowa aktualizacja (merge patch)
+PATCH {{BASE}}/weather-data/1
+Content-Type: application/merge-patch+json
+
+{
+  "temperature": 2.8
+}
+
+### DELETE
+DELETE {{BASE}}/weather-data/1
+
+### Wyszukiwanie - findByTimestampGreaterThanEqualAndLocation
+GET {{BASE}}/weather-data/search/findByTimestampGreaterThanEqualAndLocation?timestamp=2025-12-01T00:00:00Z&location={{BASE}}/locations/1&page=0&size=10
+Accept: application/json
+
+### Wyszukiwanie - findByLocation
+GET {{BASE}}/weather-data/search/findByLocation?location={{BASE}}/locations/1&page=0&size=10
+Accept: application/json
